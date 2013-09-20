@@ -10,34 +10,23 @@ Copyright (c) 2013 Gauthier Fleutot Östervall
 #include <time.h>
 
 #include "linkedlist/linkedlist.h"
+#include "machine/machine.h"
 
+
+//******************************************************************************
+// Type definitions
+//******************************************************************************
+// typedef for this struct in the header file.
 struct genome_s {
     linkedlist_t *genes;
 };
 
-typedef enum {
-    ADD, SUB, MUL, DIV,
-    NB_OPERATION_TYPES  // Must be last.
-} operation_t;
 
-typedef enum {
-    A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P,
-    NB_REGISTERS    // Must be last.
-} register_t;
-
-typedef struct {
-    register_t dst;
-    operation_t op;
-    register_t src1;
-    register_t src2;
-} command_t;
-
-// This typedef sets the max size of the genome. uint16_t sets the max to 65535,
-// for example. uint8_t sets the max to 255.
-// It is not currently possible to have a max that is not a power of two (not
-// having a power of two would result in a skew in the random distribution. Not
-// a big problem, but still).
+// This typedef sets the max size of the genome.
+// uint8_t gives max size 255.
 typedef uint8_t genome_size_t;
+
+typedef uint8_t register_value_t;
 
 
 //******************************************************************************
@@ -48,7 +37,9 @@ typedef uint8_t genome_size_t;
 //******************************************************************************
 // Module variables
 //******************************************************************************
+// Do not seed more than once.
 static bool randomizer_seeded = false;
+// Must be initialized to true before checking for genome validity.
 static bool gene_was_valid = false;
 
 
@@ -65,7 +56,7 @@ static void gene_valid_check(void const * const data);
 //******************************************************************************
 //  ----------------------------------------------------------------------------
 /// \brief  Create a genome with random commands.
-/// \return Pointer to the newly allocated genom.
+/// \return Pointer to the newly allocated genome.
 //  ----------------------------------------------------------------------------
 genome_t *genome_random_create(void)
 {
@@ -77,14 +68,21 @@ genome_t *genome_random_create(void)
     new_genome_p->genes = linkedlist_create();
 
     if (!randomizer_seeded) {
+        // Seed only once.
         srand(time(NULL));
         randomizer_seeded = true;
     }
 
+    // Implicit type conversion limits the result.
     genome_size_t genome_size = rand();
 
     for (genome_size_t i = 0; i < genome_size; i++) {
         command_t *new_command_p = malloc(sizeof (command_t));
+        if (new_command_p == NULL) {
+            fprintf(stderr, "%s: new_command_p #%d is NULL.\n", __func__, i);
+            genome_destroy(new_genome_p);
+            return NULL;
+        }
         // Modulo of a random number with a number that is not a power of two is
         // no uniformly random, but that is not very important for this
         // application.

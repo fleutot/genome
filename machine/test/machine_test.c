@@ -1,14 +1,12 @@
 /*----------------------------------------------------------------------------
 Copyright (c) 2013 Gauthier Fleutot Östervall
 ----------------------------------------------------------------------------*/
-
 // Module under test.
-#include "../genome.h"
+#include "../machine.h"
 
 #include <assert.h>
-#include <stddef.h>
+#include <stdbool.h>
 #include <stdio.h>
-
 
 //******************************************************************************
 // Module constants
@@ -21,15 +19,15 @@ Copyright (c) 2013 Gauthier Fleutot Östervall
 //******************************************************************************
 // Function prototypes
 //******************************************************************************
-// Test functions.
-static void test_genome_random_create(void);
+static void test_machine_init();
+
 
 //******************************************************************************
 // Function definitions
 //******************************************************************************
 int main(void)
 {
-    test_genome_random_create();
+    test_machine_init();
     printf("All tests passed.\n");
 }
 
@@ -37,12 +35,18 @@ int main(void)
 //******************************************************************************
 // Internal functions
 //******************************************************************************
-static void test_genome_random_create(void)
+static void test_machine_init()
 {
-    genome_t *genome = genome_random_create();
+    register_value_t data[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+                               15,16, 17};
 
-    assert(genome != NULL);
-    // It is hard to test for randomness.
+    bool init_result;
 
-    genome_destroy(genome);
+    init_result = machine_init(data, NB_REGISTERS + 1);
+    assert(init_result == false);
+
+    init_result = machine_init(data, NB_REGISTERS);
+    assert(init_result == true);
+
+    assert(machine_result_get() == data[0]);
 }
