@@ -20,17 +20,13 @@ typedef enum {
     NB_REGISTERS    // Must be last.
 } register_t;
 
-typedef struct {
-    register_t dst;
-    operation_t op;
-    register_t src1;
-    register_t src2;
-} command_t;
+typedef struct command_s command_t;
 
 // Signed value allows for easy fair interpretation of register value as
 // boolean.
 typedef int8_t register_value_t;
-
+#define REGISTER_MAX    (INT8_MAX)
+#define REGISTER_MIN    (INT8_MIN)
 
 //  ----------------------------------------------------------------------------
 /// \brief  Initialize the machine's registers to initial data.
@@ -41,6 +37,34 @@ typedef int8_t register_value_t;
 bool machine_init(register_value_t *const initial_data,
                   unsigned int const nb_initial_regs);
 
+//  ----------------------------------------------------------------------------
+/// \brief  Create a new command with the passed parameters as content.
+/// \param  out Output register index.
+/// \param  op  Operation.
+/// \param  in1 Input 1 register index.
+/// \param  in2 Input 2 register index.
+/// \return Pointer to the newly created command.
+//  ----------------------------------------------------------------------------
+command_t *machine_command_create(register_t out, operation_t op,
+                                  register_t in1,register_t in2);
+
+//  ----------------------------------------------------------------------------
+/// \brief  Destroy the command passed as parameter.
+/// \param  command Pointer to the command to destroy.
+//  ----------------------------------------------------------------------------
+void machine_command_destroy(command_t *command);
+
+//  ----------------------------------------------------------------------------
+/// \brief  Run the command passed as parameter.
+/// \param  command Pointer to the command to run.
+//  ----------------------------------------------------------------------------
+void machine_command_run(command_t const * const command);
+
+//  ----------------------------------------------------------------------------
+/// \brief  Print the command passed as parameter.
+/// \param  command Pointer to the command to print.
+//  ----------------------------------------------------------------------------
+void machine_command_print(command_t const * const command);
 
 //  ----------------------------------------------------------------------------
 /// \brief  Get the result of the machine.
