@@ -49,6 +49,12 @@ command_t *machine_command_create(register_t out, operation_t op,
                                   register_t in1,register_t in2);
 
 //  ----------------------------------------------------------------------------
+/// \brief  Create a new command with random content.
+/// \return Pointer to the newly created command.
+//  ----------------------------------------------------------------------------
+command_t *machine_command_random_create(void);
+
+//  ----------------------------------------------------------------------------
 /// \brief  Destroy the command passed as parameter.
 /// \param  command Pointer to the command to destroy.
 //  ----------------------------------------------------------------------------
@@ -64,7 +70,14 @@ void machine_command_run(command_t const * const command);
 /// \brief  Print the command passed as parameter.
 /// \param  command Pointer to the command to print.
 //  ----------------------------------------------------------------------------
-void machine_command_print(command_t const * const command);
+void machine_command_print(void const * const command);
+
+//  ----------------------------------------------------------------------------
+/// \brief  Check the validity of a command.
+/// \param  command Pointer to the command to check.
+/// \return True if valid.
+//  ----------------------------------------------------------------------------
+bool machine_command_valid_check(command_t const * const command);
 
 //  ----------------------------------------------------------------------------
 /// \brief  Get the result of the machine.

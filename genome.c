@@ -16,23 +16,17 @@ Copyright (c) 2013 Gauthier Fleutot Östervall
 //******************************************************************************
 // Type definitions
 //******************************************************************************
-// typedef for this struct in the header file.
 struct genome_s {
     linkedlist_t *genes;
 };
-
 
 // This typedef sets the max size of the genome.
 // uint8_t gives max size 255.
 typedef uint8_t genome_size_t;
 
-typedef uint8_t register_value_t;
-
-
 //******************************************************************************
 // Module constants
 //******************************************************************************
-#define GENOME_DEBUG
 
 //******************************************************************************
 // Module variables
@@ -41,7 +35,6 @@ typedef uint8_t register_value_t;
 static bool randomizer_seeded = false;
 // Must be initialized to true before checking for genome validity.
 static bool gene_was_valid = false;
-
 
 //******************************************************************************
 // Function prototypes
@@ -77,19 +70,11 @@ genome_t *genome_random_create(void)
     genome_size_t genome_size = rand();
 
     for (genome_size_t i = 0; i < genome_size; i++) {
-        command_t *new_command_p = malloc(sizeof (command_t));
+        command_t *new_command_p = machine_command_random_create();
         if (new_command_p == NULL) {
-            fprintf(stderr, "%s: new_command_p #%d is NULL.\n", __func__, i);
             genome_destroy(new_genome_p);
             return NULL;
         }
-        // Modulo of a random number with a number that is not a power of two is
-        // no uniformly random, but that is not very important for this
-        // application.
-        new_command_p->dst = (register_t) rand() % NB_REGISTERS;
-        new_command_p->op  = (operation_t) rand() % NB_OPERATION_TYPES;
-        new_command_p->src1 = (register_t) rand() % NB_REGISTERS;
-        new_command_p->src2 = (register_t) rand() % NB_REGISTERS;
         linkedlist_add(new_genome_p->genes, new_command_p);
     }
 
@@ -155,43 +140,6 @@ static void gene_destroy(void const * const data)
 
 
 //  ----------------------------------------------------------------------------
-/// \brief  Display the command gene passed as parameter on standard output. To
-/// be used as callback to linkedlist_run_for_all().
-/// \param  data Pointer to the gene to display.
-//  ----------------------------------------------------------------------------
-static void gene_display(void const * const data)
-{
-    static const char *reg_to_string[NB_REGISTERS] = {
-        [A] = "A", [B] = "B", [C] = "C", [D] = "D", [E] = "E", [F] = "F",
-        [G] = "G", [H] = "H", [I] = "I", [J] = "J", [K] = "K", [L] = "L",
-        [M] = "M", [N] = "N", [O] = "O", [P] = "P"
-    };
-
-    static const char *op_to_string[NB_OPERATION_TYPES] = {
-        [ADD] = "+", [SUB] = "-", [MUL] = "*", [DIV] = "/"
-    };
-
-    command_t *command = (command_t *) data;
-
-    #if defined(GENOME_DEBUG)
-    gene_was_valid = true;
-    gene_valid_check(data);
-    if (!gene_was_valid) {
-        fprintf(stderr, "%s: gene member out of range.\n", __func__);
-        return;
-    }
-    #endif // GENOME_DEBUG
-
-    printf("gene %s = (%s %s %s)\n",
-           reg_to_string[command->dst],
-           op_to_string[command->op],
-           reg_to_string[command->src1],
-           reg_to_string[command->src2]
-        );
-}
-
-
-//  ----------------------------------------------------------------------------
 /// \brief  Check if the gene passed as parameter seems valid. So far it just
 /// checks if operation and operands are in range. To be used as callback to
 /// linkedlist_run_for_all().
@@ -203,11 +151,7 @@ static void gene_valid_check(void const * const data)
 {
     command_t *command = (command_t *) data;
 
-    if (command->dst < 0 || command->dst >= NB_REGISTERS
-        || command->op < 0 || command->op >= NB_OPERATION_TYPES
-        || command->src1 < 0 || command->src1 >= NB_REGISTERS
-        || command->src2 < 0 || command->src2 >= NB_REGISTERS
-        ) {
+    if (!machine_command_valid_check(command)) {
         gene_was_valid = false;
     }
 }

@@ -8,6 +8,7 @@ Copyright (c) 2013 Gauthier Fleutot Östervall
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 // This must be larger than register_value_t, in order to accomodate for
 // operations with boundaries (for example add with ceiling).
@@ -107,6 +108,27 @@ command_t *machine_command_create(register_t out, operation_t op,
 
 
 //  ----------------------------------------------------------------------------
+/// \brief  Create a new object command with random content (registers and
+/// operation).
+/// \return Pointer to the created command.
+/// \pre    The random number generator is already seeded.
+//  ----------------------------------------------------------------------------
+command_t *machine_command_random_create(void)
+{
+    // Modulo of a random number with a number that is not a power of two is
+    // no uniformly random, but that is not very important for this
+    // application.
+    register_t dst = (register_t) rand() % NB_REGISTERS;
+    operation_t op  = (operation_t) rand() % NB_OPERATION_TYPES;
+    register_t src1 = (register_t) rand() % NB_REGISTERS;
+    register_t src2 = (register_t) rand() % NB_REGISTERS;
+
+    command_t *new_command_p = machine_command_create(dst, op, src1, src2);
+    return new_command_p;
+}
+
+
+//  ----------------------------------------------------------------------------
 /// \brief  Free the memory allocated for command.
 /// \param  command Pointer to the command object to free.
 //  ----------------------------------------------------------------------------
@@ -146,12 +168,49 @@ void machine_command_run(command_t const * const command)
 /// \brief  Print the command passed as parameter in a format that is quite
 /// human readable. Only the index to registers and to the operation are
 /// printed.
-/// \param  command Pointer to the command to print.
+/// \param  command Pointer to the command to print. void pointer so that the
+/// function can be used as a callback.
 //  ----------------------------------------------------------------------------
-void machine_command_print(command_t const * const command)
+void machine_command_print(void const * const command)
 {
-    printf("dst[%i] = (op[%i] src[%i] src[%i])\n", command->dst, command->op,
-           command->src1, command->src2);
+    static const char *reg_to_string[NB_REGISTERS] = {
+        [reg_A] = "A", [reg_B] = "B", [reg_C] = "C", [reg_D] = "D",
+        [reg_E] = "E", [reg_F] = "F", [reg_G] = "G", [reg_H] = "H",
+        [reg_I] = "I", [reg_J] = "J", [reg_K] = "K", [reg_L] = "L",
+        [reg_M] = "M", [reg_N] = "N", [reg_O] = "O", [reg_P] = "P"
+    };
+
+    static const char *op_to_string[NB_OPERATION_TYPES] = {
+        [ADD] = "+", [SUB] = "-", [MUL] = "*", [DIV] = "/"
+    };
+
+    command_t *cmd = (command_t *) command;
+
+    printf("%s = (%s %s %s)\n",
+           reg_to_string[cmd->dst],
+           op_to_string[cmd->op],
+           reg_to_string[cmd->src1],
+           reg_to_string[cmd->src2]
+        );
+}
+
+
+//  ----------------------------------------------------------------------------
+/// \brief  Check the validity of a command.
+/// \param  command Pointer to the command to check.
+/// \return True if valid.
+//  ----------------------------------------------------------------------------
+bool machine_command_valid_check(command_t const * const command)
+{
+    if (command->dst < 0 || command->dst >= NB_REGISTERS
+        || command->op < 0 || command->op >= NB_OPERATION_TYPES
+        || command->src1 < 0 || command->src1 >= NB_REGISTERS
+        || command->src2 < 0 || command->src2 >= NB_REGISTERS
+        ) {
+        return false;
+    } else {
+        return true;
+    }
 }
 
 
