@@ -5,8 +5,8 @@ Copyright (c) 2013 Gauthier Fleutot Östervall
 #define MACHINE_H_INCLUDED
 
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
-
 
 // Type definitions for commands.
 typedef enum {
@@ -21,6 +21,8 @@ typedef enum {
 } register_t;
 
 typedef struct command_s command_t;
+// Use this instead of sizeof(command_t), since command_t is an imcomplete type.
+extern const size_t sizeof_machine_command;
 
 // Signed value allows for easy fair interpretation of register value as
 // boolean.
@@ -51,6 +53,7 @@ command_t *machine_command_create(register_t out, operation_t op,
 //  ----------------------------------------------------------------------------
 /// \brief  Create a new command with random content.
 /// \return Pointer to the newly created command.
+/// \pre    rand() is already seeded.
 //  ----------------------------------------------------------------------------
 command_t *machine_command_random_create(void);
 
