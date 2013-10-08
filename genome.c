@@ -3,17 +3,14 @@ Copyright (c) 2013 Gauthier Fleutot Östervall
 ----------------------------------------------------------------------------*/
 #include "genome.h"
 
+#include <assert.h>
 #include <malloc.h>
 #include <stdbool.h>
-#include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
 
 #include "linkedlist/linkedlist.h"
 #include "machine/machine.h"
-
+#include "randomizer.h"
 
 //******************************************************************************
 // Type definitions
@@ -22,20 +19,14 @@ struct genome_s {
     linkedlist_t *genes;
 };
 
-// This typedef sets the max size of the genome at creation.
-// uint8_t gives max size 255.
-// Genomes can grow further by breeding.
-typedef uint8_t genome_start_size_t;
-
 //******************************************************************************
 // Module constants
 //******************************************************************************
+#define GENOME_START_SIZE_MAX   (255U)
 
 //******************************************************************************
 // Module variables
 //******************************************************************************
-// Do not seed more than once.
-static bool randomizer_seeded = false;
 // Must be initialized to true before checking for genome validity.
 static bool gene_was_valid = false;
 
@@ -60,16 +51,9 @@ genome_t *genome_random_create(void)
         return NULL;
     }
 
-    if (!randomizer_seeded) {
-        // Seed only once.
-        srand(time(NULL));
-        randomizer_seeded = true;
-    }
+    int genome_size = random_get(GENOME_START_SIZE_MAX);
 
-    // Implicit type conversion limits the result.
-    genome_start_size_t genome_size = rand();
-
-    for (genome_start_size_t i = 0; i < genome_size; i++) {
+    for (int i = 0; i < genome_size; i++) {
         command_t *new_command_p = machine_command_random_create();
         if (new_command_p == NULL) {
             fprintf(stderr, "%s: new_command_p is NULL.\n", __func__);
@@ -147,6 +131,18 @@ void genome_copy(genome_t ** const dst, genome_t const * const src)
 
 
 //  ----------------------------------------------------------------------------
+/// \brief  Print out the size and all instructions of the genes in the genome.
+/// \param  genome  Genome of which the genes are to be displayed.
+//  ----------------------------------------------------------------------------
+void genome_display(genome_t const * const genome)
+{
+    assert(genome);
+    printf("Genome size: %i\n", linkedlist_size_get(genome->genes));
+    linkedlist_run_for_all(genome->genes, machine_command_print);
+}
+
+
+//  ----------------------------------------------------------------------------
 /// \brief  Make two offsprings of two parents. The offsprings are first copies
 /// of the parents, then portions of genomes are swapped from one offspring to
 /// the other, then some mutations on the genes may occur.
@@ -166,6 +162,22 @@ void genome_breed(genome_t ** const offspring1, genome_t ** const offspring2,
 
     genome_copy(offspring1, parent1);
     genome_copy(offspring2, parent2);
+
+    int cut_offspring1_place1 =
+        random_get(linkedlist_size_get((*offspring1)->genes));
+    int cut_offspring2_place1 =
+        random_get(linkedlist_size_get((*offspring2)->genes));
+
+    linkedlist_cross((*offspring1)->genes, cut_offspring1_place1,
+                     (*offspring2)->genes, cut_offspring2_place1);
+
+    int cut_offspring1_place2 =
+        random_get(linkedlist_size_get((*offspring1)->genes));
+    int cut_offspring2_place2 =
+        random_get(linkedlist_size_get((*offspring2)->genes));
+
+    linkedlist_cross((*offspring1)->genes, cut_offspring1_place2,
+                     (*offspring2)->genes, cut_offspring2_place2);
 }
 
 

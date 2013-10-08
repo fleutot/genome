@@ -48,7 +48,9 @@ static void test_genome_random_create(void)
     genome_t *genome = genome_random_create();
 
     assert(genome != NULL);
-    // It is hard to test for randomness.
+
+    // It is hard to test for randomness. Uncomment and have a look.
+    //genome_display(genome);
 
     genome_destroy(&genome);
     fprintf(stdout, "OK\n");

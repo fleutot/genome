@@ -41,6 +41,12 @@ bool genome_sanity_check(genome_t const * const genome);
 void genome_copy(genome_t ** const dst, genome_t const * const src);
 
 //  ----------------------------------------------------------------------------
+/// \brief  Print out the size and all data in the genome.
+/// \param  genome  Genome of which the genes are to be displayed.
+//  ----------------------------------------------------------------------------
+void genome_display(genome_t const * const genome);
+
+//  ----------------------------------------------------------------------------
 /// \brief  Make two offsprings of two parents.
 /// \param  offspring1 Pointer to pointer to the first new offspring.
 /// \param  offspring2 Pointer to pointer to the secod new offspring.
