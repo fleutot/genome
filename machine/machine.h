@@ -83,6 +83,13 @@ void machine_command_print(void const * const command);
 bool machine_command_valid_check(command_t const * const command);
 
 //  ----------------------------------------------------------------------------
+/// \brief  Copy the content of a command to another.
+/// \param  dst Destination. Must have memory already allocated.
+/// \param  src Source.
+//  ----------------------------------------------------------------------------
+void machine_command_copy(command_t *dst, command_t *src);
+
+//  ----------------------------------------------------------------------------
 /// \brief  Get the result of the machine.
 /// \return Result of the last computation.
 //  ----------------------------------------------------------------------------

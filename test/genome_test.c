@@ -32,6 +32,8 @@ Copyright (c) 2013 Gauthier Fleutot Östervall
 static void test_genome_random_create(void);
 static void test_genome_copy(void);
 static void test_genome_breed(void);
+static void test_genome_mutate(void);
+static void test_genome_compare(void);
 
 //******************************************************************************
 // Function definitions
@@ -41,6 +43,8 @@ int main(void)
     test_genome_random_create();
     test_genome_copy();
     test_genome_breed();
+    test_genome_compare();
+    test_genome_mutate();
     printf("All tests passed.\n");
 }
 
@@ -117,12 +121,40 @@ static void test_genome_breed(void)
     TEST_END_PRINT();
 }
 
+
+static void test_genome_compare(void)
+{
+    TEST_START_PRINT();
+    genome_t *genome1 = genome_random_create();
+    genome_t *genome2 = genome_random_create();
+
+    assert(!genome_compare(genome1, genome2));
+
+    genome_t *genome1_copy = genome_create();
+    genome_copy(&genome1_copy, genome1);
+    assert(genome_compare(genome1, genome1_copy));
+
+    TEST_END_PRINT();
+}
+
+
 static void test_genome_mutate(void)
 {
+    TEST_START_PRINT();
+
     genome_t *origin = genome_random_create();
-    genome_t *mutant;
+    genome_t *mutant = genome_create();
 
     genome_copy(&mutant, origin);
 
-    #error you were here trying to add code
+    assert(genome_compare(mutant, origin));
+
+    genome_mutate(mutant);
+
+    assert(!genome_compare(mutant, origin));
+
+    genome_destroy(&origin);
+    genome_destroy(&mutant);
+
+    TEST_END_PRINT();
 }

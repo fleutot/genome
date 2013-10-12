@@ -9,6 +9,7 @@ Copyright (c) 2013 Gauthier Fleutot Östervall
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 // This must be larger than register_value_t, in order to accomodate for
 // operations with boundaries (for example add with ceiling).
@@ -216,6 +217,18 @@ bool machine_command_valid_check(command_t const * const command)
     } else {
         return true;
     }
+}
+
+//  ----------------------------------------------------------------------------
+/// \brief  Copy a command into another, discarding the original content.
+/// \param  dst
+/// \param  src
+//  ----------------------------------------------------------------------------
+void machine_command_copy(command_t *dst, command_t *src)
+{
+    assert(dst);
+    assert(src);
+    memcpy(dst, src, sizeof(command_t));
 }
 
 

@@ -29,7 +29,6 @@ struct genome_s {
 //******************************************************************************
 // Must be initialized to true before checking for genome validity.
 static bool gene_was_valid = false;
-static double mutation_rate = 0.005;
 
 //******************************************************************************
 // Function prototypes
@@ -132,6 +131,18 @@ void genome_copy(genome_t ** const dst, genome_t const * const src)
 
 
 //  ----------------------------------------------------------------------------
+/// \brief  Compare two genomes.
+//  ----------------------------------------------------------------------------
+bool genome_compare(genome_t * const gen1, genome_t * const gen2)
+{
+    assert(gen1);
+    assert(gen2);
+
+    return linkedlist_compare(gen1->genes, gen2->genes, sizeof_machine_command);
+}
+
+
+//  ----------------------------------------------------------------------------
 /// \brief  Print out the size and all instructions of the genes in the genome.
 /// \param  genome  Genome of which the genes are to be displayed.
 //  ----------------------------------------------------------------------------
@@ -181,30 +192,25 @@ void genome_breed(genome_t ** const offspring1, genome_t ** const offspring2,
                      (*offspring2)->genes, cut_offspring2_place2);
 }
 
-void genome_mutation_rate_set(double const new_rate)
-{
-    mutation_rate = new_rate;
-}
 
+//  ----------------------------------------------------------------------------
+/// \brief  Force a mutation on a random gene of the genome.
+/// \param  genome  The genome to mutate.
+//  ----------------------------------------------------------------------------
 void genome_mutate(genome_t const * const genome)
 {
     assert(genome);
-
-    bool mutate = random_get(RAND_MAX) < (mutation_rate * RAND_MAX);
-    if (!mutate) {
-        return;
-    }
 
     int pos = random_get(linkedlist_size_get(genome->genes));
 
     command_t *gene_to_mutate = linkedlist_data_handle_get(genome->genes, pos);
     command_t *new_gene = machine_command_random_create();
 
-    *gene_to_mutate = *new_gene;
+    machine_command_copy(gene_to_mutate, new_gene);
 
-    // Go on, all genes have the same probability of mutation.
-    genome_mutate(genome);
+    machine_command_destroy(new_gene);
 }
+
 
 //  ----------------------------------------------------------------------------
 /// \brief  Free the memory allocated for genome. All commands are deallocated,
