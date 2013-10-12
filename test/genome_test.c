@@ -11,8 +11,15 @@ Copyright (c) 2013 Gauthier Fleutot Östervall
 
 
 //******************************************************************************
-// Module constants
+// Module macros
 //******************************************************************************
+#define TEST_START_PRINT()    do {              \
+        printf("Running %s...", __func__);      \
+    } while (0)
+
+#define TEST_END_PRINT()  do {                  \
+        printf("OK.\n");                        \
+    } while (0)
 
 //******************************************************************************
 // Module variables
@@ -43,7 +50,7 @@ int main(void)
 //******************************************************************************
 static void test_genome_random_create(void)
 {
-    fprintf(stdout, "Running %s...", __func__); fflush(stdout);
+    TEST_START_PRINT();
 
     genome_t *genome = genome_random_create();
 
@@ -53,13 +60,13 @@ static void test_genome_random_create(void)
     //genome_display(genome);
 
     genome_destroy(&genome);
-    fprintf(stdout, "OK\n");
+    TEST_END_PRINT();
 }
 
 
 static void test_genome_copy(void)
 {
-    fprintf(stdout, "Running %s...", __func__); fflush(stdout);
+    TEST_START_PRINT();
     genome_t *src1 = genome_random_create();
     genome_t *src2 = genome_random_create();
     genome_t *dst = NULL;
@@ -75,13 +82,13 @@ static void test_genome_copy(void)
     genome_destroy(&src1);
     genome_destroy(&src2);
 
-    fprintf(stdout, "OK\n");
+    TEST_END_PRINT();
 }
 
 
 static void test_genome_breed(void)
 {
-    fprintf(stdout, "Running %s...", __func__); fflush(stdout);
+    TEST_START_PRINT();
 
     genome_t *genome1 = genome_random_create();
     genome_t *genome2 = genome_random_create();
@@ -107,5 +114,15 @@ static void test_genome_breed(void)
     genome_destroy(&offspring1);
     genome_destroy(&offspring2);
 
-    fprintf(stdout, "OK\n");
+    TEST_END_PRINT();
+}
+
+static void test_genome_mutate(void)
+{
+    genome_t *origin = genome_random_create();
+    genome_t *mutant;
+
+    genome_copy(&mutant, origin);
+
+    #error you were here trying to add code
 }

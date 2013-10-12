@@ -57,4 +57,8 @@ void genome_breed(genome_t ** const offspring1, genome_t ** const offspring2,
                   genome_t const * const parent1,
                   genome_t const * const parent2);
 
+void genome_mutation_rate_set(double const new_rate);
+
+void genome_mutate(genome_t const * const genome);
+
 #endif // GENOME_H_INCLUDED
