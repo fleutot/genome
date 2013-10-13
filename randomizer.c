@@ -7,6 +7,12 @@ Copyright (c) 2013 Gauthier Fleutot Östervall
 #include <stdlib.h>
 #include <time.h>
 
+#ifdef _WIN32
+// random and srandom not available on windows.
+#define random rand
+#define srandom srand
+#endif
+
 //******************************************************************************
 // Module variables
 //******************************************************************************

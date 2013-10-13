@@ -11,8 +11,16 @@ Copyright (c) 2013 Gauthier Fleutot Östervall
 
 
 //******************************************************************************
-// Module constants
+// Module macros
 //******************************************************************************
+#define TEST_START_PRINT()    do {              \
+        printf("Running %s...", __func__);      \
+        fflush(stdout);                         \
+    } while (0)
+
+#define TEST_END_PRINT()  do {                  \
+        printf("OK.\n");                        \
+    } while (0)
 
 //******************************************************************************
 // Module variables
@@ -25,6 +33,8 @@ Copyright (c) 2013 Gauthier Fleutot Östervall
 static void test_genome_random_create(void);
 static void test_genome_copy(void);
 static void test_genome_breed(void);
+static void test_genome_mutate(void);
+static void test_genome_compare(void);
 
 //******************************************************************************
 // Function definitions
@@ -34,6 +44,8 @@ int main(void)
     test_genome_random_create();
     test_genome_copy();
     test_genome_breed();
+    test_genome_compare();
+    test_genome_mutate();
     printf("All tests passed.\n");
 }
 
@@ -43,7 +55,7 @@ int main(void)
 //******************************************************************************
 static void test_genome_random_create(void)
 {
-    fprintf(stdout, "Running %s...", __func__); fflush(stdout);
+    TEST_START_PRINT();
 
     genome_t *genome = genome_random_create();
 
@@ -53,13 +65,13 @@ static void test_genome_random_create(void)
     //genome_display(genome);
 
     genome_destroy(&genome);
-    fprintf(stdout, "OK\n");
+    TEST_END_PRINT();
 }
 
 
 static void test_genome_copy(void)
 {
-    fprintf(stdout, "Running %s...", __func__); fflush(stdout);
+    TEST_START_PRINT();
     genome_t *src1 = genome_random_create();
     genome_t *src2 = genome_random_create();
     genome_t *dst = NULL;
@@ -75,13 +87,13 @@ static void test_genome_copy(void)
     genome_destroy(&src1);
     genome_destroy(&src2);
 
-    fprintf(stdout, "OK\n");
+    TEST_END_PRINT();
 }
 
 
 static void test_genome_breed(void)
 {
-    fprintf(stdout, "Running %s...", __func__); fflush(stdout);
+    TEST_START_PRINT();
 
     genome_t *genome1 = genome_random_create();
     genome_t *genome2 = genome_random_create();
@@ -107,5 +119,47 @@ static void test_genome_breed(void)
     genome_destroy(&offspring1);
     genome_destroy(&offspring2);
 
-    fprintf(stdout, "OK\n");
+    TEST_END_PRINT();
+}
+
+
+static void test_genome_compare(void)
+{
+    TEST_START_PRINT();
+    genome_t *genome1 = genome_random_create();
+    genome_t *genome2 = genome_random_create();
+
+    assert(!genome_compare(genome1, genome2));
+
+    genome_t *genome1_copy = genome_create();
+    genome_copy(&genome1_copy, genome1);
+    assert(genome_compare(genome1, genome1_copy));
+
+    genome_destroy(&genome1);
+    genome_destroy(&genome2);
+    genome_destroy(&genome1_copy);
+
+    TEST_END_PRINT();
+}
+
+
+static void test_genome_mutate(void)
+{
+    TEST_START_PRINT();
+
+    genome_t *origin = genome_random_create();
+    genome_t *mutant = genome_create();
+
+    genome_copy(&mutant, origin);
+
+    assert(genome_compare(mutant, origin));
+
+    genome_mutate(mutant);
+
+    assert(!genome_compare(mutant, origin));
+
+    genome_destroy(&origin);
+    genome_destroy(&mutant);
+
+    TEST_END_PRINT();
 }

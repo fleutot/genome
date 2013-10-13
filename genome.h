@@ -40,6 +40,16 @@ bool genome_sanity_check(genome_t const * const genome);
 //  ----------------------------------------------------------------------------
 void genome_copy(genome_t ** const dst, genome_t const * const src);
 
+
+//  ----------------------------------------------------------------------------
+/// \brief  Compare two genomes
+/// \param  gen1
+/// \param  gen2
+/// \return True if the genomes were equal.
+//  ----------------------------------------------------------------------------
+bool genome_compare(genome_t * const gen1, genome_t * const gen2);
+
+
 //  ----------------------------------------------------------------------------
 /// \brief  Print out the size and all data in the genome.
 /// \param  genome  Genome of which the genes are to be displayed.
@@ -56,5 +66,13 @@ void genome_display(genome_t const * const genome);
 void genome_breed(genome_t ** const offspring1, genome_t ** const offspring2,
                   genome_t const * const parent1,
                   genome_t const * const parent2);
+
+
+//  ----------------------------------------------------------------------------
+/// \brief  Mutate a genome. Take a random gene and replace it by a randomly
+/// generated one.
+/// \param  genome  The genome to mutate.
+//  ----------------------------------------------------------------------------
+void genome_mutate(genome_t const * const genome);
 
 #endif // GENOME_H_INCLUDED
