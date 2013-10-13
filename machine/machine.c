@@ -4,6 +4,7 @@ Copyright (c) 2013 Gauthier Fleutot Östervall
 
 #include "machine.h"
 
+#include <assert.h>
 #include <malloc.h>
 #include <stdbool.h>
 #include <stddef.h>

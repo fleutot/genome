@@ -15,6 +15,7 @@ Copyright (c) 2013 Gauthier Fleutot Östervall
 //******************************************************************************
 #define TEST_START_PRINT()    do {              \
         printf("Running %s...", __func__);      \
+        fflush(stdout);                         \
     } while (0)
 
 #define TEST_END_PRINT()  do {                  \
@@ -133,6 +134,10 @@ static void test_genome_compare(void)
     genome_t *genome1_copy = genome_create();
     genome_copy(&genome1_copy, genome1);
     assert(genome_compare(genome1, genome1_copy));
+
+    genome_destroy(&genome1);
+    genome_destroy(&genome2);
+    genome_destroy(&genome1_copy);
 
     TEST_END_PRINT();
 }
