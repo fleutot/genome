@@ -32,7 +32,7 @@ Copyright (c) 2013 Gauthier Fleutot Östervall
 // Test functions.
 static void test_genome_random_create(void);
 static void test_genome_copy(void);
-static void test_genome_breed(void);
+static void test_genome_crossover(void);
 static void test_genome_mutate(void);
 static void test_genome_compare(void);
 
@@ -43,7 +43,7 @@ int main(void)
 {
     test_genome_random_create();
     test_genome_copy();
-    test_genome_breed();
+    test_genome_crossover();
     test_genome_compare();
     test_genome_mutate();
     printf("All tests passed.\n");
@@ -78,10 +78,12 @@ static void test_genome_copy(void)
 
     genome_copy(&dst, src1);
     assert(genome_sanity_check(dst));
+    assert(genome_size_get(dst) == genome_size_get(src1));
 
     // Test overwriting.
     genome_copy(&dst, src2);
     assert(genome_sanity_check(dst));
+    assert(genome_size_get(dst) == genome_size_get(src2));
 
     genome_destroy(&dst);
     genome_destroy(&src1);
@@ -91,7 +93,7 @@ static void test_genome_copy(void)
 }
 
 
-static void test_genome_breed(void)
+static void test_genome_crossover(void)
 {
     TEST_START_PRINT();
 
@@ -101,18 +103,15 @@ static void test_genome_breed(void)
     genome_t *offspring1 = NULL;
     genome_t *offspring2 = NULL;
 
-    genome_breed(&offspring1, &offspring2, genome1, genome2);
+    genome_copy(&offspring1, genome1);
+    genome_copy(&offspring2, genome2);
+
+    genome_crossover(offspring1, offspring2);
 
     assert(genome_sanity_check(offspring1));
     assert(genome_sanity_check(offspring2));
-
-    // Retest with existing offsprings.
-    genome_breed(&offspring1, &offspring2, genome1, genome2);
-
-    assert(genome_sanity_check(offspring1));
-    assert(genome_sanity_check(offspring2));
-
-    // Need a more interesting test! How to control that the breed is ok?
+    assert((genome_size_get(genome1) + genome_size_get(genome2))
+           == (genome_size_get(offspring1) + genome_size_get(offspring2)));
 
     genome_destroy(&genome1);
     genome_destroy(&genome2);

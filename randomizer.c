@@ -7,11 +7,6 @@ Copyright (c) 2013 Gauthier Fleutot Östervall
 #include <stdlib.h>
 #include <time.h>
 
-#ifdef _WIN32
-// random and srandom not available on windows.
-#define random rand
-#define srandom srand
-#endif
 
 //******************************************************************************
 // Module variables
@@ -24,12 +19,12 @@ static bool randomizer_seeded = false;
 int random_get(const int limit)
 {
     if (!randomizer_seeded) {
-        srandom(time(NULL));
+        srand(time(NULL));
         randomizer_seeded = true;
     }
 
     // This does not give real uniformity, but since random returns long int and
     // limit is not expect to be very large, it is enough.
-    return (int) (random() % limit);
+    return (int) (rand() % limit);
 }
 

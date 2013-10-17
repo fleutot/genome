@@ -40,6 +40,12 @@ bool genome_sanity_check(genome_t const * const genome);
 //  ----------------------------------------------------------------------------
 void genome_copy(genome_t ** const dst, genome_t const * const src);
 
+//  ----------------------------------------------------------------------------
+/// \brief  Get the size of a genome.
+/// \param  genome  Pointer to the genome.
+/// \return The size of the genome.
+//  ----------------------------------------------------------------------------
+int genome_size_get(genome_t const * const genome);
 
 //  ----------------------------------------------------------------------------
 /// \brief  Compare two genomes
@@ -56,17 +62,15 @@ bool genome_compare(genome_t * const gen1, genome_t * const gen2);
 //  ----------------------------------------------------------------------------
 void genome_display(genome_t const * const genome);
 
-//  ----------------------------------------------------------------------------
-/// \brief  Make two offsprings of two parents.
-/// \param  offspring1 Pointer to pointer to the first new offspring.
-/// \param  offspring2 Pointer to pointer to the secod new offspring.
-/// \param  parent1 Pointer to the first parent.
-/// \param  parent2 Pointer to the second parent.
-//  ----------------------------------------------------------------------------
-void genome_breed(genome_t ** const offspring1, genome_t ** const offspring2,
-                  genome_t const * const parent1,
-                  genome_t const * const parent2);
 
+//  ----------------------------------------------------------------------------
+/// \brief  Crossover two genomes, resulting in a blend of the two
+/// originals. Two random parts of the genomes are swapped.
+/// \param  genome1 First genome to blend.
+/// \param  genome2 Second genome to blend.
+//  ----------------------------------------------------------------------------
+void genome_crossover(genome_t const * const genome1,
+                      genome_t const * const genome2);
 
 //  ----------------------------------------------------------------------------
 /// \brief  Mutate a genome. Take a random gene and replace it by a randomly

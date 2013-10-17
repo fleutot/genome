@@ -155,41 +155,32 @@ void genome_display(genome_t const * const genome)
 
 
 //  ----------------------------------------------------------------------------
-/// \brief  Make two offsprings of two parents. The offsprings are first copies
-/// of the parents, then portions of genomes are swapped from one offspring to
-/// the other, then some mutations on the genes may occur.
-/// \param  offspring1 Pointer to pointer to the first new offspring.
-/// \param  offspring2 Pointer to pointer to the secod new offspring.
-/// \param  parent1 Pointer to the first parent.
-/// \param  parent2 Pointer to the second parent.
+/// \brief  Cross over two genomes at two random places in each. In effect, two
+/// random fragments in each genome are swapped with one another.
+/// \param  genome1 Pointer to a genome
+/// \param  genome2 Pointer to a genome
 //  ----------------------------------------------------------------------------
-void genome_breed(genome_t ** const offspring1, genome_t ** const offspring2,
-                  genome_t const * const parent1,
-                  genome_t const * const parent2)
+void genome_crossover(genome_t const * const genome1,
+                      genome_t const * const genome2)
 {
-    if (parent1 == NULL || parent2 == NULL) {
-        fprintf(stderr, "%s: at least a parent is NULL.\n", __func__);
-        return;
-    }
+    assert(genome1);
+    assert(genome2);
 
-    genome_copy(offspring1, parent1);
-    genome_copy(offspring2, parent2);
+    int cut_genome1_place1 =
+        random_get(linkedlist_size_get(genome1->genes));
+    int cut_genome2_place1 =
+        random_get(linkedlist_size_get(genome2->genes));
 
-    int cut_offspring1_place1 =
-        random_get(linkedlist_size_get((*offspring1)->genes));
-    int cut_offspring2_place1 =
-        random_get(linkedlist_size_get((*offspring2)->genes));
+    linkedlist_cross(genome1->genes, cut_genome1_place1,
+                     genome2->genes, cut_genome2_place1);
 
-    linkedlist_cross((*offspring1)->genes, cut_offspring1_place1,
-                     (*offspring2)->genes, cut_offspring2_place1);
+    int cut_genome1_place2 =
+        random_get(linkedlist_size_get(genome1->genes));
+    int cut_genome2_place2 =
+        random_get(linkedlist_size_get(genome2->genes));
 
-    int cut_offspring1_place2 =
-        random_get(linkedlist_size_get((*offspring1)->genes));
-    int cut_offspring2_place2 =
-        random_get(linkedlist_size_get((*offspring2)->genes));
-
-    linkedlist_cross((*offspring1)->genes, cut_offspring1_place2,
-                     (*offspring2)->genes, cut_offspring2_place2);
+    linkedlist_cross(genome1->genes, cut_genome1_place2,
+                     genome2->genes, cut_genome2_place2);
 }
 
 
@@ -209,6 +200,19 @@ void genome_mutate(genome_t const * const genome)
     machine_command_copy(gene_to_mutate, new_gene);
 
     machine_command_destroy(new_gene);
+}
+
+
+//  ----------------------------------------------------------------------------
+/// \brief  Get the size of a genome, or rather its genes.
+/// \param  genome  The genome of which the size to return.
+/// \return Size of the genome.
+//  ----------------------------------------------------------------------------
+int genome_size_get(genome_t const * const genome)
+{
+    assert(genome);
+    assert(genome->genes);
+    return (linkedlist_size_get(genome->genes));
 }
 
 
