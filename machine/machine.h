@@ -21,7 +21,7 @@ typedef enum {
 } register_t;
 
 typedef struct command_s command_t;
-// Use this instead of sizeof(command_t), since command_t is an imcomplete type.
+// Use this instead of sizeof(command_t), since command_t is an incomplete type.
 extern const size_t sizeof_machine_command;
 
 // Signed value allows for easy fair interpretation of register value as

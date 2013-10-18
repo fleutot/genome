@@ -6,8 +6,11 @@ Copyright (c) 2013 Gauthier Fleutot Östervall
 #define GENOME_H_INCLUDED
 
 #include <stdbool.h>
+#include <stddef.h>
 
 typedef struct genome_s genome_t;
+// Use this instead of sizeof(genome_t), since genome_t is an incomplete type.
+extern const size_t sizeof_genome;
 
 //  ----------------------------------------------------------------------------
 /// \brief  Create a new genome of random size and random genes.

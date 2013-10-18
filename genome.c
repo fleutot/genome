@@ -6,6 +6,7 @@ Copyright (c) 2013 Gauthier Fleutot Östervall
 #include <assert.h>
 #include <malloc.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdio.h>
 
 #include "linkedlist/linkedlist.h"
@@ -18,6 +19,13 @@ Copyright (c) 2013 Gauthier Fleutot Östervall
 struct genome_s {
     linkedlist_t *genes;
 };
+
+//******************************************************************************
+// Globals
+//******************************************************************************
+// sizeof(genome_t) is needed but not available externally since it is an
+// incomplete type. Make the size available through this global.
+const size_t sizeof_genome = sizeof(genome_t);
 
 //******************************************************************************
 // Module constants
