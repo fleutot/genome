@@ -209,15 +209,11 @@ void machine_command_print(void const * const command)
 //  ----------------------------------------------------------------------------
 bool machine_command_valid_check(command_t const * const command)
 {
-    if (command->dst < 0 || command->dst >= NB_REGISTERS
-        || command->op < 0 || command->op >= NB_OPERATION_TYPES
-        || command->src1 < 0 || command->src1 >= NB_REGISTERS
-        || command->src2 < 0 || command->src2 >= NB_REGISTERS
-        ) {
-        return false;
-    } else {
-        return true;
-    }
+    return command->dst >= 0 && command->dst < NB_REGISTERS
+        && command->op >= 0 && command->op < NB_OPERATION_TYPES
+        && command->src1 >= 0 && command->src1 < NB_REGISTERS
+        && command->src2 >= 0 && command->src2 < NB_REGISTERS
+        ;
 }
 
 //  ----------------------------------------------------------------------------

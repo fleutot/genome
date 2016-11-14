@@ -180,21 +180,21 @@ static void test_machine_command_valid_check(void)
     assert(!machine_command_valid_check(&command));
     command.op = INT_MAX;
     assert(!machine_command_valid_check(&command));
-    command.op = reg_A;
+    command.op = ADD;
     assert(machine_command_valid_check(&command));
 
     command.src1 = -1;
     assert(!machine_command_valid_check(&command));
     command.src1 = INT_MAX;
     assert(!machine_command_valid_check(&command));
-    command.src1 = reg_A;
+    command.src1 = reg_B;
     assert(machine_command_valid_check(&command));
 
     command.src2 = -1;
     assert(!machine_command_valid_check(&command));
     command.src2 = INT_MAX;
     assert(!machine_command_valid_check(&command));
-    command.src2 = reg_A;
+    command.src2 = reg_C;
     assert(machine_command_valid_check(&command));
     TEST_END_PRINT();
 }
