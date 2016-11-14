@@ -3,10 +3,25 @@ Copyright (c) 2013 Gauthier Fleutot Östervall
 ----------------------------------------------------------------------------*/
 // Module under test.
 #include "../machine.h"
+#include "../machine.c" // Including c file in order to test internal
+                        // functionality. 
 
 #include <assert.h>
+#include <limits.h>
 #include <stdbool.h>
 #include <stdio.h>
+
+//******************************************************************************
+// Module macros
+//******************************************************************************
+#define TEST_START_PRINT()    do {              \
+        printf("Running %s...", __func__);      \
+        fflush(stdout);                         \
+    } while (0)
+
+#define TEST_END_PRINT()  do {                  \
+        printf("OK.\n");                        \
+    } while (0)
 
 //******************************************************************************
 // Module constants
@@ -22,7 +37,7 @@ Copyright (c) 2013 Gauthier Fleutot Östervall
 static void test_machine_init(void);
 static void test_machine_command_create(void);
 static void test_machine_command_with_clamp(void);
-
+static void test_machine_command_valid_check(void);
 
 //******************************************************************************
 // Function definitions
@@ -32,6 +47,7 @@ int main(void)
     test_machine_init();
     test_machine_command_create();
     test_machine_command_with_clamp();
+    test_machine_command_valid_check();
     printf("All tests passed.\n");
 }
 
@@ -41,6 +57,7 @@ int main(void)
 //******************************************************************************
 static void test_machine_init(void)
 {
+    TEST_START_PRINT();
     register_value_t data[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
                                15,16, 17};
 
@@ -53,10 +70,12 @@ static void test_machine_init(void)
     assert(init_result == true);
 
     assert(machine_result_get() == data[0]);
+    TEST_END_PRINT();
 }
 
 static void test_machine_command_create(void)
 {
+    TEST_START_PRINT();
     register_value_t data[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
                                15,16, 17};
 
@@ -69,11 +88,13 @@ static void test_machine_command_create(void)
     assert(result == data[1] + data[2]);
 
     machine_command_destroy(command);
+    TEST_END_PRINT();
 }
 
 
 static void test_machine_command_with_clamp(void)
 {
+    TEST_START_PRINT();
     register_value_t data[] = {
         0,                          // A
         REGISTER_MAX - 10, 20,      // B, C
@@ -134,4 +155,46 @@ static void test_machine_command_with_clamp(void)
     result = machine_result_get();
     assert(result == data[reg_J]);
     machine_command_destroy(command);
+    TEST_END_PRINT();
+}
+
+static void test_machine_command_valid_check(void)
+{
+    TEST_START_PRINT();
+    command_t command = {
+        .dst = reg_A,
+        .op = ADD,
+        .src1 = reg_B,
+        .src2 = reg_C
+    };
+    assert(machine_command_valid_check(&command));
+
+    command.dst = -1;
+    assert(!machine_command_valid_check(&command));
+    command.dst = INT_MAX;
+    assert(!machine_command_valid_check(&command));
+    command.dst = reg_A;
+    assert(machine_command_valid_check(&command));
+
+    command.op = -1;
+    assert(!machine_command_valid_check(&command));
+    command.op = INT_MAX;
+    assert(!machine_command_valid_check(&command));
+    command.op = reg_A;
+    assert(machine_command_valid_check(&command));
+
+    command.src1 = -1;
+    assert(!machine_command_valid_check(&command));
+    command.src1 = INT_MAX;
+    assert(!machine_command_valid_check(&command));
+    command.src1 = reg_A;
+    assert(machine_command_valid_check(&command));
+
+    command.src2 = -1;
+    assert(!machine_command_valid_check(&command));
+    command.src2 = INT_MAX;
+    assert(!machine_command_valid_check(&command));
+    command.src2 = reg_A;
+    assert(machine_command_valid_check(&command));
+    TEST_END_PRINT();
 }

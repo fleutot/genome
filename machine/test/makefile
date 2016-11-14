@@ -1,7 +1,8 @@
 CC = gcc
 CFLAGS = -std=c99 -g -Wall -O3 -Wno-unused-function
 
-SRC = ../machine.c machine_test.c
+# ../machine.c included in the test file, needed for testing module internals
+SRC = machine_test.c
 OBJ = $(SRC:.c=.o)
 TARGET = machine_test
 
